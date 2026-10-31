@@ -1,0 +1,8 @@
+{
+  "name": "매쓰 아레나 (Math Arena)",
+  "description": "초등학생이 수학 문제를 풀며 경쟁하고 협력하는 교실용 수학 배틀 웹앱",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Learner account credentials with nickname and password",
+      "type": "object",
+      "properties": {
+        "nickname": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 20,
+          "description": "User nickname for classroom identification"
+        },
+        "password": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 64,
+          "description": "User password"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of registration"
+        }
+      },
+      "required": ["nickname", "password", "createdAt"]
+    },
+    "HallOfFameEntry": {
+      "title": "HallOfFameEntry",
+      "description": "Public high score entry published to the Hall of Fame upon battle completion",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Unique record id"
+        },
+        "nickname": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20,
+          "description": "Learner nickname"
+        },
+        "score": {
+          "type": "number",
+          "description": "Score achieved in the math battle"
+        },
+        "accuracy": {
+          "type": "number",
+          "description": "Accuracy percentage (0 - 100)"
+        },
+        "correctCount": {
+          "type": "number",
+          "description": "Number of questions answered correctly"
+        },
+        "incorrectCount": {
+          "type": "number",
+          "description": "Number of questions answered incorrectly"
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["keypad", "tug-of-war", "solo"],
+          "description": "Game mode"
+        },
+        "grade": {
+          "type": "number",
+          "description": "Target grade level"
+        },
+        "durationSeconds": {
+          "type": "number",
+          "description": "Duration of the battle session in seconds"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of entry creation"
+        }
+      },
+      "required": ["id", "nickname", "score", "accuracy", "mode", "grade", "durationSeconds", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Registered learner credentials and profile"
+    },
+    "/hallOfFame/{entryId}": {
+      "schema": "HallOfFameEntry",
+      "description": "Classroom Hall of Fame public leaderboard entries"
+    }
+  }
+}

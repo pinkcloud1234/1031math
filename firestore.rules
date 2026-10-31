@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['nickname', 'password', 'createdAt']) &&
+             data.keys().hasOnly(['nickname', 'password', 'createdAt']) &&
+             data.nickname is string && data.nickname.size() >= 2 && data.nickname.size() <= 20 &&
+             data.password is string && data.password.size() >= 4 && data.password.size() <= 64 &&
+             data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    function isValidHallOfFame(data) {
+      return data.keys().hasAll(['id', 'nickname', 'score', 'accuracy', 'mode', 'grade', 'durationSeconds', 'createdAt']) &&
+             data.keys().hasOnly(['id', 'nickname', 'score', 'accuracy', 'correctCount', 'incorrectCount', 'mode', 'grade', 'durationSeconds', 'createdAt']) &&
+             data.id is string && data.id.size() > 0 && data.id.size() <= 128 &&
+             data.nickname is string && data.nickname.size() >= 1 && data.nickname.size() <= 20 &&
+             data.score is number && data.score >= 0 && data.score <= 100000 &&
+             data.accuracy is number && data.accuracy >= 0 && data.accuracy <= 100 &&
+             (data.mode == 'keypad' || data.mode == 'tug-of-war' || data.mode == 'solo') &&
+             data.grade is number && data.grade >= 0 && data.grade <= 6 &&
+             data.durationSeconds is number && data.durationSeconds >= 0 && data.durationSeconds <= 3600 &&
+             data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    // Users collection for nickname/password credentials
+    match /users/{userId} {
+      allow get: if isValidId(userId);
+      allow list: if false;
+      allow create: if isValidId(userId) && isValidUser(incoming());
+      allow update, delete: if false;
+    }
+
+    // Hall of Fame public leaderboard
+    match /hallOfFame/{entryId} {
+      allow read: if true;
+      allow create: if isValidId(entryId) && isValidHallOfFame(incoming());
+      allow update, delete: if false;
+    }
+  }
+}
